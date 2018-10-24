@@ -7,25 +7,32 @@
  *  Faculty of Electronics and Information Technology
  */
 
-#include <stdio.h>
 #include <stdbool.h>
-
-#define MAX_N 10
+#include <stdio.h>
+#include <stdlib.h>
 
 void printTab(int n, int *tab)
 {
     for (int i = 0; i < n * n; ++i)
     {
         printf("%d ", tab[i]);
-
         if ((i + 1) % n == 0)
         {
             printf("\n");
         }
     }
+
+    printf("\n");
 }
 
-bool isMagicSquare(int n, int *tab)
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+bool isMagic(int n, int *tab)
 {
     int sum = 0;
     for (int i = 0; i < n * n; ++i)
@@ -82,29 +89,28 @@ bool isMagicSquare(int n, int *tab)
     return true;
 }
 
-void func(int n, int *tab, bool *used, int index)
+void func(int n, int *tab, int index, int *counter)
 {
-    if (index == n * n)
+    if (*counter == 5)
     {
-        if (isMagicSquare(n, tab))
+        return;
+    }
+
+    if (index >= n * n)
+    {
+        if (isMagic(n, tab))
         {
             printTab(n, tab);
-            printf("\n");
+            ++(*counter);
         }
     }
     else
     {
-        for (int i = 1; i <= n * n; ++i)
+        for (int i = index; i < n * n; ++i)
         {
-            if (!used[i])
-            {
-                used[i] = true;
-                tab[index] = i;
-
-                func(n, tab, used, index + 1);
-
-                used[i] = false;
-            }
+            swap(tab + i, tab + index);
+            func(n, tab, index + 1, counter);
+            swap(tab + i, tab + index);
         }
     }
 }
@@ -114,10 +120,18 @@ int main()
     int n;
     scanf("%d", &n);
 
-    int tab[MAX_N] = { 0 };
-    bool used[MAX_N * MAX_N + 1] = { false };
+    int *tab = malloc(n*n*sizeof(int));
 
-    func(n, tab, used, 0);
+    for (int i = 0; i < n*n; ++i)
+    {
+        tab[i] = i + 1;
+    }
+
+    int counter = 0;
+    func(n, tab, 0, &counter);
+    printf("Found: %d\n", counter);
+
+    free(tab);
 
     return 0;
 }
