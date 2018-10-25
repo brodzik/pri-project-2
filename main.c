@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_SIZE 1000000
+
 void printTab(int n, int *tab)
 {
     for (int i = 0; i < n * n; ++i)
@@ -91,7 +93,7 @@ bool isMagic(int n, int *tab)
 
 void func(int n, int *tab, int index, int *counter)
 {
-    if (*counter == 5)
+    if (n != 3 && *counter == 5)
     {
         return;
     }
@@ -117,21 +119,36 @@ void func(int n, int *tab, int index, int *counter)
 
 int main()
 {
-    int n;
-    scanf("%d", &n);
+    printf("3x3 magic squares:\n");
+    int tab3x3[] = {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 9
+    };
+    int counter3x3 = 0;
+    func(3, tab3x3, 0, &counter3x3);
 
-    int *tab = malloc(n*n*sizeof(int));
+    printf("4x4 magic squares:\n");
+    int tab4x4[] = {
+        1, 15, 14, 4,
+        12, 6, 7, 9,
+        8, 10, 11, 5,
+        13, 3, 2, 16
+    };
+    int counter4x4 = 0;
+    func(4, tab4x4, 0, &counter4x4);
 
-    for (int i = 0; i < n*n; ++i)
-    {
-        tab[i] = i + 1;
-    }
-
-    int counter = 0;
-    func(n, tab, 0, &counter);
-    printf("Found: %d\n", counter);
-
-    free(tab);
+    printf("5x5 magic squares:\n");
+    int tab5x5[] = {
+        3, 7, 14, 16, 25,
+        11, 20, 23, 2, 9,
+        22, 4, 6, 15, 18,
+        10, 13, 17, 24, 1,
+        19, 21, 5, 8, 12
+    };
+    int counter5x5 = 0;
+    func(5, tab5x5, 0, &counter5x5);
 
     return 0;
 }
+
