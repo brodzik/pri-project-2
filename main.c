@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // Swaps two values
 void swap(int *a, int *b)
@@ -23,7 +24,7 @@ void printSquare(int n, int *tab)
 {
     for (int i = 0; i < n*n; ++i)
     {
-        printf("%d ", tab[i]);
+        printf("%d\t", tab[i]);
 
         if ((i + 1) % n == 0)
         {
@@ -109,15 +110,104 @@ void bruteForcePermutations(int n, int *tab, int index)
     }
 }
 
+// Generates all permutations of 'tab' and calls 'callback' after each permutation.
+void smartPermutations(int size, int *tab, int *data, int index, void (*callback)(int, int*, int*, int*), int *counter)
+{
+    if (*counter == 5)
+    {
+        return;
+    }
+
+    if (index == size)
+    {
+        callback(size, tab, data, counter);
+    }
+    else
+    {
+        for (int i = index; i < size; ++i)
+        {
+            swap(tab + i, tab + index);
+            smartPermutations(size, tab, data, index + 1, callback, counter);
+            swap(tab + i, tab + index);
+        }
+    }
+}
+
+// Based on 'create5x5'
+void create4x4(int size, int *x, int *X, int *counter)
+{
+    int magic[] = {
+        X[0] + x[0], X[1] + x[1], X[2] + x[2], X[3] + x[3],
+        X[2] + x[3], X[3] + x[2], X[0] + x[1], X[1] + x[0],
+        X[3] + x[1], X[2] + x[0], X[1] + x[3], X[0] + x[2],
+        X[1] + x[2], X[0] + x[3], X[3] + x[0], X[2] + x[1]
+    };
+
+    printSquare(size, magic);
+
+    ++(*counter);
+}
+
+// Source: http://www.magic-squares.net/pandiag5.htm
+void create5x5(int size, int *x, int *X, int *counter)
+{
+    int magic[] = {
+        X[0] + x[0], X[1] + x[1], X[2] + x[2], X[3] + x[3], X[4] + x[4],
+        X[2] + x[3], X[3] + x[4], X[4] + x[0], X[0] + x[1], X[1] + x[2],
+        X[4] + x[1], X[0] + x[2], X[1] + x[3], X[2] + x[4], X[3] + x[0],
+        X[1] + x[4], X[2] + x[0], X[3] + x[1], X[4] + x[2], X[0] + x[3],
+        X[3] + x[2], X[4] + x[3], X[0] + x[4], X[1] + x[0], X[2] + x[1]
+    };
+
+    printSquare(size, magic);
+
+    ++(*counter);
+}
+
+void innerPermutations(int size, int *tab, int *data, int *counter)
+{
+    if (size == 4)
+    {
+        smartPermutations(size, data, tab, 0, create4x4, counter);
+    }
+    else if (size == 5)
+    {
+        smartPermutations(size, data, tab, 0, create5x5, counter);
+    }
+    else
+    {
+        printf("Size must be equal to 4 or 5.\n");
+        exit(-1);
+    }
+}
+
 int main()
 {
-    // n = 3
+    printf("---------- n = 3 ----------\n\n");
+
     int tab3x3[] = {
         1, 2, 3,
         4, 5, 6,
         7, 8, 9
     };
+
     bruteForcePermutations(3, tab3x3, 0);
+
+    printf("---------- n = 4 ----------\n\n");
+
+    int tab4x4_1[] = { 0, 4, 8, 12 };
+    int tab4x4_2[] = { 1, 2, 3, 4 };
+    int counter4x4 = 0;
+
+    smartPermutations(4, tab4x4_1, tab4x4_2, 0, innerPermutations, &counter4x4);
+
+    printf("---------- n = 5 ----------\n\n");
+
+    int tab5x5_1[] = { 0, 5, 10, 15, 20 };
+    int tab5x5_2[] = { 1, 2, 3, 4, 5 };
+    int counter5x5 = 0;
+
+    smartPermutations(5, tab5x5_1, tab5x5_2, 0, innerPermutations, &counter5x5);
 
     return 0;
 }
