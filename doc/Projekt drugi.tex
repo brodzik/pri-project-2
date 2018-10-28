@@ -1,0 +1,77 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usetikzlibrary{shapes, arrows, positioning, fit, backgrounds}
+
+\tikzstyle{rect} = [draw, rectangle, rounded corners, fill=white, minimum width=1.5cm, minimum height=0.7cm]
+\tikzstyle{fillonly} = [draw, rectangle, minimum width=7cm, minimum height=3cm, fill=black!10]
+\tikzstyle{line} = [draw, -latex]
+
+\titleformat*{\section}{\Large\bfseries}
+
+\title{\bf [PRI] Projekt drugi}
+\author{Adrian Brodzik}
+
+\begin{document}
+
+\maketitle
+
+\section*{Zadanie}
+Napisać program generujący kwadraty magiczne dla $n=3,4,5$. Dla przypadku $n=3$ wszystkie możliwe, dla przypadków $n=4$ oraz $n=5$ po $5$ przykładowych.
+\\\\
+Kwadrat magiczny to tablica liczb składająca się z $n$ wierszy i $n$ kolumn ($n>2$), w którą wpisano $n^{2}$ różnych liczb naturalnych (tzn. $1,2,...,n^{2}$) w ten sposób, że suma liczb w każdym wierszu, w każdej kolumnie i w każdej przekątnej jest taka sama (tzw. \textit{suma magiczna}).
+
+\section*{Problem}
+Generować takie macierze kwadratowe o wymiarach $n$ na $n$ zawierające wszystkie elementy ze zbioru $\{1,2,...,n^{2}\}$, że suma liczb w każdym wierszu, w każdej kolumnie i w każdej przekątnej jest taka sama.
+
+\section*{Rozwiązanie}
+Macierz kwadratową można przedstawić za pomocą tablicy jednowymiarowej o długości $n^{2}$; rozwiązanie trywialne polega na wygenerowaniu wszystkich możliwych permutacji tablicy i sprawdzeniu odpowiednich sum, przy czym magiczna suma $M$ jest stała i zależna od $n$, tzn. $M(n)=\frac{n(n^2+1)}{2}$. Takie rozwiązanie jest niewydajne i skuteczne tylko dla $n=3$.
+\\
+\\
+Dla pozostałych przypadków optymalne będzie wykorzystanie tzw. \textit{cyklicznego kwadratu magicznego}.
+
+\begin{center}
+	$\begin{bmatrix}
+	A+a & B+b & C+c & D+d \\
+	C+d & D+c & A+b & B+a \\
+	D+b & C+a & B+d & A+c \\
+	B+c & A+d & D+a & C+b
+	\end{bmatrix}$
+\end{center}
+Cykliczny kwadrat magiczny dla $n=4$, gdzie $A,B,C,D\in\{0,4,8,12\}$ oraz $a,b,c,d\in\{1,2,3,4\}$
+\begin{center}
+	$\begin{bmatrix}
+	A+a & B+b & C+c & D+d & E+e \\
+	C+d & D+e & E+a & A+b & B+c \\
+	E+b & A+c & B+d & C+e & D+a \\
+	B+e & C+a & D+b & E+c & A+d \\
+	D+c & E+d & A+e & B+a & C+b
+	\end{bmatrix}$
+\end{center}
+Cykliczny kwadrat magiczny dla $n=5$, gdzie $A,B,C,D,E\in\{0,5,10,15,20\}$ oraz $a,b,c,d,e\in\{1,2,3,4,5\}$
+\\\\
+Wtedy dla dowolnej permutacji tablic $[A,B,C,D]$ i $[a,b,c,d]$ oraz $[A,B,C,D,E]$ i $[a,b,c,d,e]$ otrzymamy magiczne kwadraty.
+
+\section*{Biblioteka standardowa}
+Użyto funkcję \texttt{printf} ze standardowej biblioteki \texttt{stdio.h} do wyświetlania komunikatów dla użytkownika oraz do wypisywania wyjścia programu. Załączono bibliotekę standardową \texttt{stdbool.h}, aby móc korzystać ze zmiennych typu logicznego \texttt{bool}. Użyto również funkcję \texttt{exit} z biblioteki standardowej \texttt{stdlib.h}, żeby przerwać program w razie wystąpienia błędów.
+
+\section*{Schemat działania}
+TODO
+
+\section*{Testowanie}
+Program nie przyjmuje wejścia danych od użytkownika; wystarczy zweryfikować rozwiązania dla $n=3,4,5$, tzn. poprawność funkcji sprawdzającej magiczne sumy oraz funkcje tworzące magiczne kwadraty z wykorzystaniem cyklicznych kwadratów magicznych.
+
+\section*{Podsumowanie}
+Zarówno rozwiązanie wolne, jak i szybkie, wykorzystuje funkcje rekurencyjne do tworzenia permutacji tablic. Dla przypadku $n=3$ zastosowano rozwiązanie \textit{brute-force} sprawdzające wszystkie możliwe permutacje. Natomiast dla $n=4,5$ wykorzystano pewne heurystyki umożliwiające znaczne przyspieszenie tworzenia magicznych kwadratów.
+
+\section*{Bibliografia}
+\begin{itemize}
+	\item https://en.wikipedia.org/wiki/Magic\_constant
+	\item https://www.geeksforgeeks.org/write-a-c-program-to-print-all-permutations-of-a-given-string
+	\item http://www.magic-squares.net/pandiag5.htm
+\end{itemize}
+
+\end{document}
