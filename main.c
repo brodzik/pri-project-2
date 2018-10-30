@@ -10,6 +10,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+#define MAX_COUNT 500
+#define MAX_SIZE 25
 
 // Swaps two values
 void swap(int *a, int *b)
@@ -20,15 +24,30 @@ void swap(int *a, int *b)
 }
 
 // Prints a square matrix
-void printSquare(int n, int *tab)
+void printSquare(int n, int *tab, int sys)
 {
-    for (int i = 0; i < n*n; ++i)
+    if (sys == 1)
     {
-        printf("%d\t", tab[i]);
-
-        if ((i + 1) % n == 0)
+        for (int i = 0; i < n*n; ++i)
         {
-            printf("\n");
+            printf("%d\t", tab[i]);
+
+            if ((i + 1) % n == 0)
+            {
+                printf("\n");
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < n*n; ++i)
+        {
+            printf("%x\t", tab[i]);
+
+            if ((i + 1) % n == 0)
+            {
+                printf("\n");
+            }
         }
     }
 
@@ -91,14 +110,14 @@ bool isMagicSquare(int n, int *tab)
 
 // Generates all possible permutations of a square matrix
 // Source: https://www.geeksforgeeks.org/write-a-c-program-to-print-all-permutations-of-a-given-string/
-void permutate(int n, int *tab, int index)
+void permutate(int n, int *tab, int index, int sys)
 {
     // Finish recursion
     if (index == n*n)
     {
         if (isMagicSquare(n, tab))
         {
-            printSquare(n, tab);
+            printSquare(n, tab, sys);
         }
     }
     // Continue recursion
@@ -108,7 +127,7 @@ void permutate(int n, int *tab, int index)
         for (int i = index; i < n*n; ++i)
         {
             swap(tab + i, tab + index);
-            permutate(n, tab, index + 1);
+            permutate(n, tab, index + 1, sys);
             swap(tab + i, tab + index);
         }
     }
@@ -116,11 +135,11 @@ void permutate(int n, int *tab, int index)
 
 // Generates all permutations of 'tab' and calls 'callback' after each permutation,
 // 'data' variable is used to pass extra information to the 'callback' function,
-// 'callback' arguments: size, tab, data, counter
-void advancedPermutate(int size, int *tab, int *data, int index, void (*callback)(int, int*, int*, int*), int *counter)
+// 'callback' arguments: size, tab, data, tabs, counter
+void advancedPermutate(int size, int *tab, int *data, int index, void (*callback)(int, int*, int*, int[MAX_COUNT][MAX_SIZE], int*), int tabs[MAX_COUNT][MAX_SIZE], int *counter)
 {
     // Limit magic square output
-    if (*counter == 5)
+    if (*counter == MAX_COUNT)
     {
         return;
     }
@@ -128,7 +147,7 @@ void advancedPermutate(int size, int *tab, int *data, int index, void (*callback
     // Finish recursion
     if (index == size)
     {
-        callback(size, tab, data, counter);
+        callback(size, tab, data, tabs, counter);
     }
     // Continue recursion
     else
@@ -137,7 +156,7 @@ void advancedPermutate(int size, int *tab, int *data, int index, void (*callback
         for (int i = index; i < size; ++i)
         {
             swap(tab + i, tab + index);
-            advancedPermutate(size, tab, data, index + 1, callback, counter);
+            advancedPermutate(size, tab, data, index + 1, callback, tabs, counter);
             swap(tab + i, tab + index);
         }
     }
@@ -145,7 +164,7 @@ void advancedPermutate(int size, int *tab, int *data, int index, void (*callback
 
 // Creates a 4x4 magic square
 // Source: http://www.magic-squares.net/pandiag5.htm
-void create4x4(int size, int *x, int *X, int *counter)
+void create4x4(int size, int *x, int *X, int tabs[MAX_COUNT][MAX_SIZE], int *counter)
 {
     int magic[] = {
         X[0] + x[0], X[1] + x[1], X[2] + x[2], X[3] + x[3],
@@ -154,14 +173,17 @@ void create4x4(int size, int *x, int *X, int *counter)
         X[1] + x[2], X[0] + x[3], X[3] + x[0], X[2] + x[1]
     };
 
-    printSquare(size, magic);
+    for (int i = 0; i < size * size; ++i)
+    {
+        tabs[*counter][i] = magic[i];
+    }
 
     ++(*counter);
 }
 
 // Creates a 5x5 magic square
 // Source: http://www.magic-squares.net/pandiag5.htm
-void create5x5(int size, int *x, int *X, int *counter)
+void create5x5(int size, int *x, int *X, int tabs[MAX_COUNT][MAX_SIZE], int *counter)
 {
     int magic[] = {
         X[0] + x[0], X[1] + x[1], X[2] + x[2], X[3] + x[3], X[4] + x[4],
@@ -171,21 +193,24 @@ void create5x5(int size, int *x, int *X, int *counter)
         X[3] + x[2], X[4] + x[3], X[0] + x[4], X[1] + x[0], X[2] + x[1]
     };
 
-    printSquare(size, magic);
+    for (int i = 0; i < size * size; ++i)
+    {
+        tabs[*counter][i] = magic[i];
+    }
 
     ++(*counter);
 }
 
 // Used as a 'callback' function for 'advancedPermutate' to permutate 'data'
-void innerPermutation(int size, int *tab, int *data, int *counter)
+void innerPermutation(int size, int *tab, int *data, int tabs[MAX_COUNT][MAX_SIZE], int *counter)
 {
     if (size == 4)
     {
-        advancedPermutate(size, data, tab, 0, create4x4, counter);
+        advancedPermutate(size, data, tab, 0, create4x4, tabs, counter);
     }
     else if (size == 5)
     {
-        advancedPermutate(size, data, tab, 0, create5x5, counter);
+        advancedPermutate(size, data, tab, 0, create5x5, tabs, counter);
     }
     else
     {
@@ -196,6 +221,21 @@ void innerPermutation(int size, int *tab, int *data, int *counter)
 
 int main()
 {
+    srand(time(NULL));
+
+    printf("Choose system:\n");
+    printf("1) 10\n");
+    printf("2) 16\n");
+    
+    int sys;
+    scanf("%d", &sys);
+
+    if (sys != 1 && sys != 2)
+    {
+        printf("Invalid number system selected.\n");
+        exit(-1);
+    }
+
     printf("---------- n = 3 ----------\n\n");
 
     int tab3x3[] = {
@@ -204,23 +244,35 @@ int main()
         7, 8, 9
     };
 
-    permutate(3, tab3x3, 0);
+    permutate(3, tab3x3, 0, sys);
 
     printf("---------- n = 4 ----------\n\n");
 
     int tab4x4_1[] = { 0, 4, 8, 12 };
     int tab4x4_2[] = { 1, 2, 3, 4 };
+    int tabs4x4[MAX_COUNT][MAX_SIZE];
     int counter4x4 = 0;
 
-    advancedPermutate(4, tab4x4_1, tab4x4_2, 0, innerPermutation, &counter4x4);
+    advancedPermutate(4, tab4x4_1, tab4x4_2, 0, innerPermutation, tabs4x4, &counter4x4);
+
+    for (int i = 0; i < 5; ++i)
+    {
+        printSquare(4, tabs4x4[rand() % MAX_COUNT], sys);
+    }
 
     printf("---------- n = 5 ----------\n\n");
 
     int tab5x5_1[] = { 0, 5, 10, 15, 20 };
     int tab5x5_2[] = { 1, 2, 3, 4, 5 };
+    int tabs5x5[MAX_COUNT][MAX_SIZE];
     int counter5x5 = 0;
 
-    advancedPermutate(5, tab5x5_1, tab5x5_2, 0, innerPermutation, &counter5x5);
+    advancedPermutate(5, tab5x5_1, tab5x5_2, 0, innerPermutation, tabs5x5, &counter5x5);
+
+    for (int i = 0; i < 5; ++i)
+    {
+        printSquare(5, tabs5x5[rand() % MAX_COUNT], sys);
+    }
 
     return 0;
 }
